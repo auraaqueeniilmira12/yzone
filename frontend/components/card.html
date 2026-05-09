@@ -1,0 +1,16 @@
+<!-- frontend/components/card.html -->
+<!-- Template untuk movie card (bisa dipakai ulang) -->
+
+<div class="movie-card" data-movie-id="{{id}}">
+    <img src="{{poster}}" alt="{{title}}" class="movie-poster" onerror="this.src='/assets/images/placeholder.jpg'">
+    <div class="movie-info">
+        <h3 class="movie-title">{{title}}</h3>
+        <p class="movie-year">{{year}}</p>
+        <div class="movie-rating">
+            <i class="fas fa-star"></i> {{rating}}/10
+        </div>
+        <button class="watchlist-btn {{watchlistClass}}" data-id="{{id}}">
+            <i class="fas {{watchlistIcon}}"></i> {{watchlistText}}
+        </button>
+    </div>
+</div>

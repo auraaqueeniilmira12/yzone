@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movies - YZONE</title>
+    <link rel="stylesheet" href="/frontend/css/main.css">
+    <link rel="stylesheet" href="/frontend/css/movies.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div id="navbar-placeholder"></div>
+
+    <main>
+        <section class="page-header">
+            <div class="container">
+                <h1>Movies</h1>
+                <p>Jelajahi ribuan film dari berbagai genre dan tahun</p>
+            </div>
+        </section>
+
+        <!-- Search Bar -->
+        <section class="search-bar-section">
+            <div class="container">
+                <div class="search-wrapper">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-movies-input" class="search-movies-input" placeholder="Cari film berdasarkan judul, genre, atau sutradara...">
+                    <button id="clear-search-btn" class="clear-search-btn" style="display: none;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Filter Bar -->
+        <section class="filter-bar">
+            <div class="container">
+                <div class="filter-wrapper">
+                    <div class="filter-group">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="Action">Action</button>
+                        <button class="filter-btn" data-filter="Adventure">Adventure</button>
+                        <button class="filter-btn" data-filter="Crime">Crime</button>
+                        <button class="filter-btn" data-filter="Drama">Drama</button>
+                        <button class="filter-btn" data-filter="Sci-Fi">Sci-Fi</button>
+                        <button class="filter-btn" data-filter="Thriller">Thriller</button>
+                    </div>
+                    <div class="sort-group">
+                        <select id="sort-select" class="sort-select">
+                            <option value="default">Sort by</option>
+                            <option value="rating-desc">Rating Tertinggi</option>
+                            <option value="rating-asc">Rating Terendah</option>
+                            <option value="year-desc">Tahun Terbaru</option>
+                            <option value="year-asc">Tahun Terlama</option>
+                            <option value="title-asc">Judul A-Z</option>
+                            <option value="title-desc">Judul Z-A</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Movies Count -->
+        <div class="movies-count">
+            <div class="container">
+                <p>Menampilkan <span id="movies-count">0</span> film</p>
+            </div>
+        </div>
+
+        <!-- Movies Grid -->
+        <section class="movies-section">
+            <div class="container">
+                <div id="movies-grid-container" class="movies-grid">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Loading movies...</p>
+                    </div>
+                </div>
+                <div id="pagination" class="pagination"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>YZONE</h3>
+                    <p>Your Zone for Cinema</p>
+                </div>
+                <div class="footer-links">
+                    <a href="/frontend/index.html">Home</a>
+                    <a href="/frontend/pages/movies.html">Movies</a>
+                    <a href="/frontend/pages/actors.html">Actors</a>
+                    <a href="/frontend/pages/profile.html">Watchlist</a>
+                    <a href="/frontend/pages/login.html">Login</a>
+                </div>
+                <div class="footer-copyright">
+                    <p>&copy; 2025 YZONE. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/frontend/js/data.js"></script>
+    <script src="/frontend/js/auth.js"></script>
+    <script src="/frontend/js/utils.js"></script>
+    <script src="/frontend/js/api.js"></script>
+    <script src="/frontend/js/watchlist.js"></script>
+    <script src="/frontend/js/navbar.js"></script>
+    
+    <script>
+        let allMovies = [];
+        let currentMovies = [];
+        let currentFilter = 'all';
+        let currentSort = 'default';
+        let currentPage = 1;
+        let currentSearchQuery = '';
+        const itemsPerPage = 12;
+
+        const moviesContainer = document.getElementById('movies-grid-container');
+        const paginationContainer = document.getElementById('pagination');
+        const moviesCountSpan = document.getElementById('movies-count');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const sortSelect = document.getElementById('sort-select');
+        const searchInput = document.getElementById('search-movies-input');
+        const clearSearchBtn = document.getElementById('clear-search-btn');
+
+        async function initMoviesPage() {
+            try {
+                await loadAllMovies();
+                setupEventListeners();
+                setupSearchListener();
+            } catch (error) {
+                console.error('Init movies page error:', error);
+                if (moviesContainer) {
+                    showError(moviesContainer, 'Gagal memuat data film');
+                }
+            }
+        }
+
+        async function loadAllMovies() {
+            if (!moviesContainer) return;
+            try {
+                showLoading(moviesContainer);
+                allMovies = await YZONE_API.getAllMovies();
+                currentMovies = [...allMovies];
+                applyFilterAndSort();
+            } catch (error) {
+                console.error('Load movies error:', error);
+                showError(moviesContainer, 'Gagal memuat film.');
+            }
+        }
+
+        function applyFilterAndSort() {
+            let filtered = [...allMovies];
+            
+            // Apply search query
+            if (currentSearchQuery.trim() !== '') {
+                const query = currentSearchQuery.toLowerCase();
+                filtered = filtered.filter(movie => 
+                    movie.title.toLowerCase().includes(query) ||
+                    movie.genre.toLowerCase().includes(query) ||
+                    movie.director.toLowerCase().includes(query)
+                );
+                // Tambahkan ke search history jika ada query baru
+                if (currentSearchQuery.trim() !== '' && window.addToSearchHistory) {
+                    window.addToSearchHistory(currentSearchQuery.trim(), 'movies');
+                }
+            }
+            
+            // Apply filter genre
+            if (currentFilter !== 'all') {
+                filtered = filtered.filter(movie => 
+                    movie.genre.toLowerCase().includes(currentFilter.toLowerCase())
+                );
+            }
+            
+            // Apply sort
+            filtered = sortMovies(filtered, currentSort);
+            
+            currentMovies = filtered;
+            updateMoviesCount();
+            renderCurrentPage();
+        }
+
+        function sortMovies(movies, sortOption) {
+            const sorted = [...movies];
+            switch(sortOption) {
+                case 'rating-desc': return sorted.sort((a, b) => b.rating - a.rating);
+                case 'rating-asc': return sorted.sort((a, b) => a.rating - b.rating);
+                case 'year-desc': return sorted.sort((a, b) => b.year - a.year);
+                case 'year-asc': return sorted.sort((a, b) => a.year - b.year);
+                case 'title-asc': return sorted.sort((a, b) => a.title.localeCompare(b.title));
+                case 'title-desc': return sorted.sort((a, b) => b.title.localeCompare(a.title));
+                default: return sorted;
+            }
+        }
+
+        function updateMoviesCount() {
+            if (moviesCountSpan) {
+                moviesCountSpan.textContent = currentMovies.length;
+            }
+        }
+
+        async function renderCurrentPage() {
+            if (!moviesContainer) return;
+            
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const pageMovies = currentMovies.slice(start, end);
+            
+            if (pageMovies.length === 0) {
+                moviesContainer.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-film" style="font-size: 48px; color: #e50914; margin-bottom: 20px;"></i>
+                        <h3>Tidak ada film ditemukan</h3>
+                        <p>Coba ubah filter atau kata kunci pencarian</p>
+                        <button class="btn btn-primary" onclick="resetAllFilters()">Reset Filter</button>
+                    </div>
+                `;
+                paginationContainer.innerHTML = '';
+                return;
+            }
+            
+            let html = '';
+            for (const movie of pageMovies) {
+                const inWatchlist = await YZONE_WATCHLIST.isMovieInWatchlist(movie.id);
+                const watchlistBtnText = inWatchlist ? 'In Watchlist' : 'Add to Watchlist';
+                const watchlistBtnClass = inWatchlist ? 'watchlist-btn active' : 'watchlist-btn';
+                
+                html += `
+                    <div class="movie-card" data-movie-id="${movie.id}">
+                        <img src="${movie.poster}" alt="${movie.title}" class="movie-poster" onerror="this.src='/frontend/assets/images/placeholder.jpg'">
+                        <div class="movie-info">
+                            <h3 class="movie-title">${escapeHtml(movie.title)}</h3>
+                            <p class="movie-year">${movie.year}</p>
+                            <div class="movie-rating">
+                                <i class="fas fa-star"></i> ${movie.rating}/10
+                            </div>
+                            <button class="${watchlistBtnClass}" data-id="${movie.id}">
+                                <i class="fas ${inWatchlist ? 'fa-check' : 'fa-plus'}"></i> ${watchlistBtnText}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+            moviesContainer.innerHTML = html;
+            attachMovieCardEvents();
+            renderPagination();
+        }
+
+        function renderPagination() {
+            if (!paginationContainer) return;
+            const totalPages = Math.ceil(currentMovies.length / itemsPerPage);
+            if (totalPages <= 1) {
+                paginationContainer.innerHTML = '';
+                return;
+            }
+            
+            let html = '';
+            html += `<button class="page-btn ${currentPage === 1 ? 'disabled' : ''}" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}><i class="fas fa-chevron-left"></i> Prev</button>`;
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                    html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+                } else if (i === currentPage - 3 || i === currentPage + 3) {
+                    html += `<button class="page-btn disabled" disabled>...</button>`;
+                }
+            }
+            html += `<button class="page-btn ${currentPage === totalPages ? 'disabled' : ''}" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Next <i class="fas fa-chevron-right"></i></button>`;
+            paginationContainer.innerHTML = html;
+        }
+
+        window.changePage = function(page) {
+            const totalPages = Math.ceil(currentMovies.length / itemsPerPage);
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+            renderCurrentPage();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        window.resetAllFilters = function() {
+            currentFilter = 'all';
+            currentSort = 'default';
+            currentSearchQuery = '';
+            currentPage = 1;
+            
+            if (searchInput) {
+                searchInput.value = '';
+                clearSearchBtn.style.display = 'none';
+            }
+            
+            filterBtns.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-filter') === 'all') {
+                    btn.classList.add('active');
+                }
+            });
+            sortSelect.value = 'default';
+            applyFilterAndSort();
+        };
+
+        function attachMovieCardEvents() {
+            document.querySelectorAll('.movie-card').forEach(card => {
+                const movieId = card.getAttribute('data-movie-id');
+                card.addEventListener('click', (e) => {
+                    if (e.target.tagName !== 'BUTTON' && !e.target.closest('button')) {
+                        window.location.href = `/frontend/pages/detail.html?id=${movieId}`;
+                    }
+                });
+            });
+            
+            document.querySelectorAll('.watchlist-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    const movieId = btn.getAttribute('data-id');
+                    const isActive = btn.classList.contains('active');
+                    
+                    if (isActive) {
+                        const watchlist = await YZONE_WATCHLIST.getWatchlist();
+                        const item = watchlist.find(w => w.movie && w.movie.id === parseInt(movieId));
+                        if (item) {
+                            await YZONE_WATCHLIST.removeMovieFromWatchlist(item.watchlistId);
+                            btn.classList.remove('active');
+                            btn.innerHTML = '<i class="fas fa-plus"></i> Add to Watchlist';
+                        }
+                    } else {
+                        await YZONE_WATCHLIST.addMovieToWatchlist(movieId);
+                        btn.classList.add('active');
+                        btn.innerHTML = '<i class="fas fa-check"></i> In Watchlist';
+                    }
+                });
+            });
+        }
+
+        function setupEventListeners() {
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentFilter = btn.getAttribute('data-filter');
+                    currentPage = 1;
+                    applyFilterAndSort();
+                });
+            });
+            
+            sortSelect.addEventListener('change', () => {
+                currentSort = sortSelect.value;
+                currentPage = 1;
+                applyFilterAndSort();
+            });
+        }
+
+        function setupSearchListener() {
+            if (!searchInput) return;
+            
+            const performSearch = () => {
+                currentSearchQuery = searchInput.value;
+                currentPage = 1;
+                
+                if (currentSearchQuery) {
+                    clearSearchBtn.style.display = 'flex';
+                } else {
+                    clearSearchBtn.style.display = 'none';
+                }
+                
+                applyFilterAndSort();
+            };
+            
+            searchInput.addEventListener('input', debounce(performSearch, 500));
+            
+            if (clearSearchBtn) {
+                clearSearchBtn.addEventListener('click', () => {
+                    searchInput.value = '';
+                    currentSearchQuery = '';
+                    clearSearchBtn.style.display = 'none';
+                    currentPage = 1;
+                    applyFilterAndSort();
+                });
+            }
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        function debounce(func, delay) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), delay);
+            };
+        }
+
+        document.addEventListener('DOMContentLoaded', initMoviesPage);
+    </script>
+</body>
+</html>

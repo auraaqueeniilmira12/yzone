@@ -1,0 +1,258 @@
+/* frontend/css/movies.css */
+/* Khusus untuk halaman movies.html */
+
+/* Page Header */
+.page-header {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a0000 100%);
+    padding: 60px 0 40px;
+    border-bottom: 1px solid #1a1a1a;
+}
+
+.page-header h1 {
+    font-size: 48px;
+    margin-bottom: 12px;
+}
+
+.page-header p {
+    color: #888888;
+    font-size: 18px;
+}
+
+/* Search Bar Section */
+.search-bar-section {
+    background: #0a0a0a;
+    padding: 20px 0;
+    border-bottom: 1px solid #1a1a1a;
+}
+
+.search-wrapper {
+    display: flex;
+    align-items: center;
+    background: #1a1a1a;
+    border: 1px solid #333333;
+    border-radius: 12px;
+    padding: 8px 16px;
+    transition: all 0.3s;
+}
+
+.search-wrapper:focus-within {
+    border-color: #e50914;
+    box-shadow: 0 0 0 2px rgba(229, 9, 20, 0.2);
+}
+
+.search-wrapper i {
+    color: #666666;
+    font-size: 18px;
+}
+
+.search-movies-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 12px 12px;
+    color: #ffffff;
+    font-size: 16px;
+    outline: none;
+}
+
+.search-movies-input::placeholder {
+    color: #666666;
+}
+
+.clear-search-btn {
+    background: transparent;
+    border: none;
+    color: #888888;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.clear-search-btn:hover {
+    color: #e50914;
+    background: #2a2a2a;
+}
+
+/* Filter Bar */
+.filter-bar {
+    background: #0a0a0a;
+    padding: 20px 0;
+    border-bottom: 1px solid #1a1a1a;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.filter-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.filter-group {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    padding: 8px 20px;
+    background: #1a1a1a;
+    border: 1px solid #333333;
+    border-radius: 30px;
+    color: #cccccc;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 14px;
+}
+
+.filter-btn:hover {
+    border-color: #e50914;
+    color: #e50914;
+}
+
+.filter-btn.active {
+    background: #e50914;
+    border-color: #e50914;
+    color: white;
+}
+
+.sort-select {
+    padding: 8px 16px;
+    background: #1a1a1a;
+    border: 1px solid #333333;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+}
+
+.sort-select:focus {
+    outline: none;
+    border-color: #e50914;
+}
+
+/* Movies Count */
+.movies-count {
+    padding: 20px 0;
+    color: #888888;
+    font-size: 14px;
+}
+
+.movies-count span {
+    color: #e50914;
+    font-weight: 600;
+}
+
+/* Movies Grid */
+.movies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 24px;
+    padding: 20px 0;
+}
+
+/* No Results */
+.no-results {
+    text-align: center;
+    padding: 80px 20px;
+}
+
+.no-results h3 {
+    font-size: 24px;
+    margin-bottom: 12px;
+}
+
+.no-results p {
+    color: #888888;
+    margin-bottom: 24px;
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 40px 0 60px;
+}
+
+.page-btn {
+    padding: 10px 16px;
+    background: #1a1a1a;
+    border: 1px solid #333333;
+    border-radius: 6px;
+    color: #cccccc;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.page-btn:hover {
+    background: #e50914;
+    border-color: #e50914;
+    color: white;
+}
+
+.page-btn.active {
+    background: #e50914;
+    border-color: #e50914;
+    color: white;
+}
+
+.page-btn.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .page-header h1 {
+        font-size: 32px;
+    }
+    
+    .page-header p {
+        font-size: 16px;
+    }
+    
+    .filter-wrapper {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .filter-group {
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 8px;
+    }
+    
+    .filter-btn {
+        white-space: nowrap;
+    }
+    
+    .movies-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .movies-grid {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        gap: 12px;
+    }
+    
+    .page-header {
+        padding: 40px 0 24px;
+    }
+    
+    .search-movies-input {
+        font-size: 14px;
+    }
+}

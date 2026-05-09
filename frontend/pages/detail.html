@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Detail - YZONE</title>
+    <link rel="stylesheet" href="/frontend/css/main.css">
+    <link rel="stylesheet" href="/frontend/css/detail.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Rating Stars */
+        .rating-stars {
+            display: flex;
+            gap: 8px;
+            margin: 15px 0;
+        }
+        
+        .rating-star {
+            font-size: 28px;
+            cursor: pointer;
+            color: #333;
+            transition: all 0.2s;
+        }
+        
+        .rating-star:hover,
+        .rating-star.active {
+            color: #ffc107;
+        }
+        
+        .rating-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #888;
+        }
+        
+        .user-rating-section {
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        /* Cast Section */
+        .cast-section {
+            margin: 30px 0;
+        }
+        
+        .cast-section h4 {
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+        
+        .cast-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+        }
+        
+        .cast-card {
+            background: #1a1a1a;
+            border-radius: 12px;
+            overflow: hidden;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .cast-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(229, 9, 20, 0.2);
+        }
+        
+        .cast-photo {
+            width: 100%;
+            aspect-ratio: 1/1;
+            object-fit: cover;
+        }
+        
+        .cast-info {
+            padding: 12px;
+        }
+        
+        .cast-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .cast-character {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        /* Review Section */
+        .reviews-section {
+            margin-top: 30px;
+        }
+        
+        .review-card {
+            background: #0a0a0a;
+            border: 1px solid #1a1a1a;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .review-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .review-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .review-user {
+            font-weight: 600;
+            flex: 1;
+        }
+        
+        .review-date {
+            font-size: 11px;
+            color: #666;
+        }
+        
+        .review-content {
+            color: #ccc;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+        
+        .review-actions {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .like-btn {
+            background: none;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .like-btn:hover,
+        .like-btn.liked {
+            color: #e50914;
+        }
+        
+        .delete-review-btn {
+            background: none;
+            border: none;
+            color: #dc3545;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .write-review {
+            margin-top: 20px;
+        }
+        
+        .review-textarea {
+            width: 100%;
+            padding: 12px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: white;
+            resize: vertical;
+            font-family: inherit;
+        }
+        
+        .review-textarea:focus {
+            outline: none;
+            border-color: #e50914;
+        }
+        
+        .submit-review-btn {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background: #e50914;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+        }
+        
+        .no-reviews {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+        }
+        
+        .average-rating {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .average-score {
+            font-size: 36px;
+            font-weight: 700;
+            color: #ffc107;
+        }
+        
+        .rating-badge {
+            background: #1a1a1a;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        
+        /* Trailer, Share & Watch Buttons */
+        .action-buttons-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .btn-trailer, .btn-share, .btn-watch {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            font-size: 14px;
+        }
+        
+        .btn-trailer {
+            background: #ff0000;
+            color: white;
+        }
+        
+        .btn-trailer:hover {
+            background: #cc0000;
+            transform: translateY(-2px);
+        }
+        
+        .btn-watch {
+            background: #0072ff;
+            color: white;
+        }
+        
+        .btn-watch:hover {
+            background: #0055cc;
+            transform: translateY(-2px);
+        }
+        
+        .btn-share {
+            background: #1a1a1a;
+            color: white;
+            border: 1px solid #333;
+        }
+        
+        .btn-share:hover {
+            background: #2a2a2a;
+            border-color: #e50914;
+            transform: translateY(-2px);
+        }
+        
+        /* Modal Trailer & Watch */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            position: relative;
+            width: 90%;
+            max-width: 900px;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+        
+        .modal-close:hover {
+            color: #e50914;
+        }
+        
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+        }
+        
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* Share Dropdown */
+        .share-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .share-menu {
+            display: none;
+            position: absolute;
+            bottom: 100%;
+            right: 0;
+            margin-bottom: 10px;
+            background: #0a0a0a;
+            border: 1px solid #1a1a1a;
+            border-radius: 12px;
+            min-width: 200px;
+            z-index: 200;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+        
+        .share-menu.show {
+            display: block;
+        }
+        
+        .share-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: #e0e0e0;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        
+        .share-menu a:hover {
+            background: #1a1a1a;
+            color: #e50914;
+        }
+        
+        .share-menu a:first-child {
+            border-radius: 12px 12px 0 0;
+        }
+        
+        .share-menu a:last-child {
+            border-radius: 0 0 12px 12px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="navbar-placeholder"></div>
+
+    <main class="movie-detail">
+        <div class="container">
+            <div class="back-button">
+                <a href="javascript:history.back()" class="back-link">
+                    <i class="fas fa-arrow-left"></i> Back
+                </a>
+            </div>
+
+            <div id="detail-container">
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <p>Loading movie details...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Trailer -->
+    <div id="trailer-modal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeTrailerModal()">&times;</button>
+            <div class="video-container" id="video-container"></div>
+        </div>
+    </div>
+
+    <!-- Modal Watch Movie (Google Drive) -->
+    <div id="watch-modal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeWatchModal()">&times;</button>
+            <div class="video-container" id="watch-video-container"></div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>YZONE</h3>
+                    <p>Your Zone for Cinema</p>
+                </div>
+                <div class="footer-links">
+                    <a href="/frontend/index.html">Home</a>
+                    <a href="/frontend/pages/movies.html">Movies</a>
+                    <a href="/frontend/pages/actors.html">Actors</a>
+                    <a href="/frontend/pages/profile.html">Watchlist</a>
+                    <a href="/frontend/pages/login.html">Login</a>
+                </div>
+                <div class="footer-copyright">
+                    <p>&copy; 2025 YZONE. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/frontend/js/utils.js"></script>
+    <script src="/frontend/js/data.js"></script>
+    <script src="/frontend/js/api.js"></script>
+    <script src="/frontend/js/watchlist.js"></script>
+    <script src="/frontend/js/rating.js"></script>
+    <script src="/frontend/js/auth.js"></script>
+    <script src="/frontend/js/navbar.js"></script>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const movieId = urlParams.get('id');
+        let currentWatchlistId = null;
+        let currentUser = null;
+        let currentMovieData = null;
+        
+        // YouTube Trailer IDs untuk setiap film
+        const trailerIds = {
+            1: "6hB3S9bIaco",      // The Shawshank Redemption
+            2: "sY1S34973zA",      // The Godfather
+            3: "EXeTwQWrcwY",      // The Dark Knight
+            4: "s7EdQ4FqbhY",      // Pulp Fiction
+            5: "bLvqoHBqjg4",      // Forrest Gump
+            6: "YoHD9XEInc0",      // Inception
+            7: "m8e-FF8MsqU",      // The Matrix
+            8: "zSWdZVtXT7E"       // Interstellar
+        };
+        
+        async function initDetailPage() {
+            currentUser = window.YZONE_AUTH.getCurrentUser();
+            
+            if (!movieId) {
+                showErrorPage('Movie ID tidak ditemukan');
+                return;
+            }
+            try {
+                await loadMovieDetail(movieId);
+            } catch (error) {
+                console.error('Init detail page error:', error);
+                showErrorPage('Gagal memuat detail film');
+            }
+        }
+        
+        async function loadMovieDetail(id) {
+            const container = document.getElementById('detail-container');
+            showLoading(container);
+            
+            try {
+                const movie = await YZONE_API.getMovieById(id);
+                if (!movie) {
+                    showErrorPage('Film tidak ditemukan');
+                    return;
+                }
+                
+                currentMovieData = movie;
+                
+                const inWatchlist = await YZONE_WATCHLIST.isMovieInWatchlist(movie.id);
+                
+                if (inWatchlist) {
+                    const watchlist = await YZONE_WATCHLIST.getWatchlist();
+                    const item = watchlist.find(w => w.movie && w.movie.id === movie.id);
+                    if (item) {
+                        currentWatchlistId = item.watchlistId;
+                    }
+                }
+                
+                renderMovieDetail(movie, inWatchlist);
+                renderCastSection(movie);
+                renderRatingSection(movie.id);
+                renderReviewsSection(movie.id);
+                
+            } catch (error) {
+                console.error('Load movie detail error:', error);
+                showErrorPage('Gagal memuat data film.');
+            }
+        }
+        
+        function renderMovieDetail(movie, inWatchlist) {
+            const container = document.getElementById('detail-container');
+            
+            const genres = movie.genre.split(',');
+            let genreTags = '';
+            genres.forEach(genre => {
+                genreTags += `<span class="genre-tag">${genre.trim()}</span>`;
+            });
+            
+            const watchlistBtnText = inWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist';
+            const watchlistBtnClass = inWatchlist ? 'watchlist-btn-large in-watchlist' : 'watchlist-btn-large';
+            const watchlistIcon = inWatchlist ? 'fa-trash' : 'fa-plus';
+            
+            const avgRating = window.YZONE_RATING.getMovieAverageRating(movie.id);
+            const ratingCount = window.YZONE_RATING.getMovieRatingCount(movie.id);
+            
+            // Cek apakah film punya link Google Drive
+            const hasDriveLink = movie.drive_link && movie.drive_link.trim() !== '';
+            const watchBtnHtml = hasDriveLink ? `
+                <button class="btn-watch" onclick="openWatchModal()">
+                    <i class="fas fa-play"></i> Watch Movie
+                </button>
+            ` : '';
+            
+            const html = `
+                <div class="detail-content">
+                    <div class="poster-section">
+                        <img src="${movie.poster}" alt="${movie.title}" class="movie-poster-large" onerror="this.src='/frontend/images/placeholder.jpg'">
+                    </div>
+                    <div class="info-section">
+                        <h1 class="movie-title-large">${movie.title}</h1>
+                        
+                        <div class="movie-meta">
+                            <div class="movie-year-large"><i class="fas fa-calendar"></i> ${movie.year}</div>
+                            <div class="movie-rating-large"><i class="fas fa-star"></i> ${movie.rating}/10 (Official)</div>
+                        </div>
+                        
+                        <div class="average-rating">
+                            <div class="average-score">${avgRating > 0 ? avgRating.toFixed(1) : '-'}</div>
+                            <div class="rating-badge">
+                                <i class="fas fa-users"></i> ${ratingCount} user rating${ratingCount !== 1 ? 's' : ''}
+                            </div>
+                        </div>
+                        
+                        <div class="movie-genres">
+                            ${genreTags}
+                        </div>
+                        
+                        <div class="movie-director">
+                            <strong><i class="fas fa-user"></i> Director</strong>
+                            <p>${movie.director}</p>
+                        </div>
+                        
+                        <div class="movie-synopsis">
+                            <strong><i class="fas fa-align-left"></i> Synopsis</strong>
+                            <p>${movie.description || 'Tidak ada sinopsis untuk film ini.'}</p>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <button id="watchlist-action-btn" class="${watchlistBtnClass}" data-id="${movie.id}">
+                                <i class="fas ${watchlistIcon}"></i> ${watchlistBtnText}
+                            </button>
+                        </div>
+                        
+                        <div class="action-buttons-group">
+                            <button class="btn-trailer" onclick="openTrailerModal(${movie.id})">
+                                <i class="fab fa-youtube"></i> Watch Trailer
+                            </button>
+                            ${watchBtnHtml}
+                            <div class="share-dropdown">
+                                <button class="btn-share" onclick="toggleShareMenu()">
+                                    <i class="fas fa-share-alt"></i> Share
+                                </button>
+                                <div id="share-menu" class="share-menu">
+                                    <a href="#" onclick="shareMovie('whatsapp')">
+                                        <i class="fab fa-whatsapp"></i> WhatsApp
+                                    </a>
+                                    <a href="#" onclick="shareMovie('facebook')">
+                                        <i class="fab fa-facebook"></i> Facebook
+                                    </a>
+                                    <a href="#" onclick="shareMovie('twitter')">
+                                        <i class="fab fa-twitter"></i> Twitter
+                                    </a>
+                                    <a href="#" onclick="shareMovie('telegram')">
+                                        <i class="fab fa-telegram"></i> Telegram
+                                    </a>
+                                    <a href="#" onclick="copyShareLink()">
+                                        <i class="fas fa-link"></i> Copy Link
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="cast-section" class="cast-section"></div>
+                <div id="rating-section" class="user-rating-section"></div>
+                <div id="reviews-section" class="reviews-section"></div>
+            `;
+            
+            container.innerHTML = html;
+            
+            const watchlistBtn = document.getElementById('watchlist-action-btn');
+            if (watchlistBtn) {
+                watchlistBtn.addEventListener('click', async () => {
+                    const isInWatchlist = watchlistBtn.classList.contains('in-watchlist');
+                    
+                    if (isInWatchlist && currentWatchlistId) {
+                        const result = await YZONE_WATCHLIST.removeMovieFromWatchlist(currentWatchlistId);
+                        if (result.success) {
+                            watchlistBtn.classList.remove('in-watchlist');
+                            watchlistBtn.innerHTML = '<i class="fas fa-plus"></i> Add to Watchlist';
+                            currentWatchlistId = null;
+                            showNotification('Film dihapus dari watchlist', 'success');
+                        }
+                    } else {
+                        const result = await YZONE_WATCHLIST.addMovieToWatchlist(movie.id);
+                        if (result.success && result.data) {
+                            watchlistBtn.classList.add('in-watchlist');
+                            watchlistBtn.innerHTML = '<i class="fas fa-trash"></i> Remove from Watchlist';
+                            currentWatchlistId = result.data.watchlistId;
+                            showNotification('Film ditambahkan ke watchlist', 'success');
+                        }
+                    }
+                });
+            }
+        }
+        
+        function renderCastSection(movie) {
+            const container = document.getElementById('cast-section');
+            if (!container) return;
+            
+            if (!movie.cast || movie.cast.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+            
+            let castHtml = `
+                <h4><i class="fas fa-users"></i> Top Cast</h4>
+                <div class="cast-grid">
+            `;
+            
+            for (const actor of movie.cast) {
+                castHtml += `
+                    <div class="cast-card" onclick="goToActor('${encodeURIComponent(actor.name)}')">
+                        <img src="${actor.photo}" alt="${actor.name}" class="cast-photo" onerror="this.src='/frontend/images/placeholder.jpg'">
+                        <div class="cast-info">
+                            <div class="cast-name">${actor.name}</div>
+                            <div class="cast-character">${actor.character}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            castHtml += `</div>`;
+            container.innerHTML = castHtml;
+        }
+        
+        function goToActor(actorName) {
+            // Redirect ke halaman actors dengan parameter search
+            window.location.href = `/frontend/pages/actors.html?search=${actorName}`;
+        }
+        
+        function renderRatingSection(movieId) {
+            const container = document.getElementById('rating-section');
+            if (!container) return;
+            
+            const userRating = currentUser ? window.YZONE_RATING.getMovieRatingByUser(movieId, currentUser.id) : null;
+            const currentRating = userRating ? userRating.rating : 0;
+            
+            let starsHtml = '';
+            for (let i = 1; i <= 5; i++) {
+                starsHtml += `<i class="fas fa-star rating-star ${i <= currentRating ? 'active' : ''}" data-rating="${i}"></i>`;
+            }
+            
+            container.innerHTML = `
+                <h4><i class="fas fa-star" style="color: #ffc107;"></i> Rate This Movie</h4>
+                <div class="rating-stars" id="rating-stars">
+                    ${starsHtml}
+                </div>
+                <div class="rating-info">
+                    ${currentRating > 0 ? `Your rating: ${currentRating}/5` : 'Click on the stars to rate this movie'}
+                </div>
+            `;
+            
+            if (currentUser) {
+                const stars = document.querySelectorAll('.rating-star');
+                stars.forEach(star => {
+                    star.addEventListener('click', async () => {
+                        const rating = parseInt(star.getAttribute('data-rating'));
+                        await window.YZONE_RATING.saveRating(movieId, currentUser.id, rating);
+                        renderRatingSection(movieId);
+                        renderReviewsSection(movieId);
+                        showNotification('Rating berhasil disimpan!', 'success');
+                    });
+                });
+            } else {
+                container.innerHTML += `<p style="margin-top: 10px;"><a href="/frontend/pages/login.html">Login</a> to rate this movie</p>`;
+            }
+        }
+        
+        async function renderReviewsSection(movieId) {
+            const container = document.getElementById('reviews-section');
+            if (!container) return;
+            
+            const reviews = window.YZONE_RATING.getMovieReviews(movieId);
+            const userReview = currentUser ? window.YZONE_RATING.getMovieReviewByUser(movieId, currentUser.id) : null;
+            
+            let html = `<h4><i class="fas fa-comments"></i> User Reviews (${reviews.length})</h4>`;
+            
+            if (currentUser) {
+                html += `
+                    <div class="write-review">
+                        <textarea id="review-content" class="review-textarea" rows="3" placeholder="Write your review...">${userReview ? escapeHtml(userReview.content) : ''}</textarea>
+                        <button id="submit-review" class="submit-review-btn">
+                            <i class="fas fa-paper-plane"></i> ${userReview ? 'Update Review' : 'Submit Review'}
+                        </button>
+                    </div>
+                `;
+            } else {
+                html += `<p style="margin: 15px 0;"><a href="/frontend/pages/login.html">Login</a> to write a review</p>`;
+            }
+            
+            if (reviews.length === 0) {
+                html += `<div class="no-reviews">No reviews yet. Be the first to review!</div>`;
+            } else {
+                html += `<div id="reviews-list">`;
+                for (const review of reviews) {
+                    const isLiked = review.likedBy && currentUser && review.likedBy.includes(currentUser.id);
+                    html += `
+                        <div class="review-card" data-review-id="${review.id}">
+                            <div class="review-header">
+                                <img src="${review.userAvatar || 'https://ui-avatars.com/api/?background=e50914&color=fff&name=' + encodeURIComponent(review.userName)}" class="review-avatar">
+                                <div class="review-user">${escapeHtml(review.userName)}</div>
+                                <div class="review-date">${new Date(review.createdAt).toLocaleDateString('id-ID')}</div>
+                            </div>
+                            <div class="review-content">${escapeHtml(review.content)}</div>
+                            <div class="review-actions">
+                                <button class="like-btn ${isLiked ? 'liked' : ''}" onclick="window.toggleLike(${review.id})">
+                                    <i class="fas fa-heart"></i> <span>${review.likes || 0}</span>
+                                </button>
+                                ${currentUser && review.userId === currentUser.id ? `<button class="delete-review-btn" onclick="window.deleteReview(${review.id})"><i class="fas fa-trash"></i> Delete</button>` : ''}
+                            </div>
+                        </div>
+                    `;
+                }
+                html += `</div>`;
+            }
+            
+            container.innerHTML = html;
+            
+            if (currentUser) {
+                const submitBtn = document.getElementById('submit-review');
+                const reviewContent = document.getElementById('review-content');
+                if (submitBtn && reviewContent) {
+                    submitBtn.addEventListener('click', async () => {
+                        const content = reviewContent.value.trim();
+                        if (!content) {
+                            showNotification('Review cannot be empty!', 'error');
+                            return;
+                        }
+                        
+                        const result = await window.YZONE_RATING.saveReview(
+                            movieId, 
+                            currentUser.id, 
+                            currentUser.name, 
+                            currentUser.avatar, 
+                            content
+                        );
+                        
+                        if (result.success) {
+                            showNotification('Review saved!', 'success');
+                            renderReviewsSection(movieId);
+                        }
+                    });
+                }
+            }
+        }
+        
+        // ========== TRAILER FUNCTIONS ==========
+        function openTrailerModal(movieId) {
+            const trailerId = trailerIds[movieId];
+            if (!trailerId) {
+                showNotification('Trailer tidak tersedia untuk film ini', 'error');
+                return;
+            }
+            
+            const modal = document.getElementById('trailer-modal');
+            const videoContainer = document.getElementById('video-container');
+            
+            videoContainer.innerHTML = `
+                <iframe 
+                    src="https://www.youtube.com/embed/${trailerId}?autoplay=1" 
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen>
+                </iframe>
+            `;
+            
+            modal.style.display = 'flex';
+        }
+        
+        function closeTrailerModal() {
+            const modal = document.getElementById('trailer-modal');
+            const videoContainer = document.getElementById('video-container');
+            videoContainer.innerHTML = '';
+            modal.style.display = 'none';
+        }
+        
+        // ========== WATCH MOVIE FUNCTIONS (GOOGLE DRIVE) ==========
+        function openWatchModal() {
+            if (!currentMovieData || !currentMovieData.drive_link) {
+                showNotification('Link film tidak tersedia', 'error');
+                return;
+            }
+            
+            const modal = document.getElementById('watch-modal');
+            const videoContainer = document.getElementById('watch-video-container');
+            
+            let embedUrl = currentMovieData.drive_link;
+            
+            // Konversi link Google Drive ke embed link
+            if (currentMovieData.drive_link.includes('drive.google.com/file/d/')) {
+                const fileIdMatch = currentMovieData.drive_link.match(/\/d\/(.+?)\/view/);
+                if (fileIdMatch && fileIdMatch[1]) {
+                    embedUrl = `https://drive.google.com/file/d/${fileIdMatch[1]}/preview`;
+                }
+            } else if (currentMovieData.drive_link.includes('drive.google.com')) {
+                // Handle other Google Drive formats
+                const fileIdMatch = currentMovieData.drive_link.match(/id=(.+?)(&|$)/);
+                if (fileIdMatch && fileIdMatch[1]) {
+                    embedUrl = `https://drive.google.com/file/d/${fileIdMatch[1]}/preview`;
+                }
+            }
+            
+            videoContainer.innerHTML = `
+                <iframe 
+                    src="${embedUrl}" 
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen>
+                </iframe>
+            `;
+            
+            modal.style.display = 'flex';
+        }
+        
+        function closeWatchModal() {
+            const modal = document.getElementById('watch-modal');
+            const videoContainer = document.getElementById('watch-video-container');
+            videoContainer.innerHTML = '';
+            modal.style.display = 'none';
+        }
+        
+        // ========== SHARE FUNCTIONS ==========
+        function getShareUrl(platform) {
+            const movie = currentMovieData;
+            if (!movie) return null;
+            
+            const url = encodeURIComponent(window.location.href);
+            const text = encodeURIComponent(`Check out ${movie.title} (${movie.year}) on YZONE! Rating: ${movie.rating}/10`);
+            
+            switch(platform) {
+                case 'whatsapp':
+                    return `https://wa.me/?text=${text}%20${url}`;
+                case 'facebook':
+                    return `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+                case 'twitter':
+                    return `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
+                case 'telegram':
+                    return `https://t.me/share/url?url=${url}&text=${text}`;
+                default:
+                    return null;
+            }
+        }
+        
+        function shareMovie(platform) {
+            const shareUrl = getShareUrl(platform);
+            if (shareUrl) {
+                window.open(shareUrl, '_blank', 'width=600,height=400');
+            }
+            closeShareMenu();
+        }
+        
+        async function copyShareLink() {
+            try {
+                await navigator.clipboard.writeText(window.location.href);
+                showNotification('Link copied to clipboard!', 'success');
+            } catch (err) {
+                showNotification('Failed to copy link', 'error');
+            }
+            closeShareMenu();
+        }
+        
+        function toggleShareMenu() {
+            const menu = document.getElementById('share-menu');
+            menu.classList.toggle('show');
+            
+            if (menu.classList.contains('show')) {
+                setTimeout(() => {
+                    document.addEventListener('click', closeShareMenuOnClickOutside);
+                }, 100);
+            } else {
+                document.removeEventListener('click', closeShareMenuOnClickOutside);
+            }
+        }
+        
+        function closeShareMenu() {
+            const menu = document.getElementById('share-menu');
+            menu.classList.remove('show');
+            document.removeEventListener('click', closeShareMenuOnClickOutside);
+        }
+        
+        function closeShareMenuOnClickOutside(e) {
+            const shareDropdown = document.querySelector('.share-dropdown');
+            const menu = document.getElementById('share-menu');
+            if (shareDropdown && !shareDropdown.contains(e.target)) {
+                menu.classList.remove('show');
+                document.removeEventListener('click', closeShareMenuOnClickOutside);
+            }
+        }
+        
+        // Make functions global
+        window.openTrailerModal = openTrailerModal;
+        window.closeTrailerModal = closeTrailerModal;
+        window.openWatchModal = openWatchModal;
+        window.closeWatchModal = closeWatchModal;
+        window.shareMovie = shareMovie;
+        window.copyShareLink = copyShareLink;
+        window.toggleShareMenu = toggleShareMenu;
+        window.toggleLike = toggleLike;
+        window.deleteReview = deleteReview;
+        window.goToActor = goToActor;
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+        
+        async function toggleLike(reviewId) {
+            if (!currentUser) {
+                showNotification('Login to like reviews', 'error');
+                window.location.href = '/frontend/pages/login.html';
+                return;
+            }
+            
+            const reviews = window.YZONE_RATING.getMovieReviews(parseInt(movieId));
+            const review = reviews.find(r => r.id === reviewId);
+            const isLiked = review.likedBy && review.likedBy.includes(currentUser.id);
+            
+            if (isLiked) {
+                await window.YZONE_RATING.unlikeReview(reviewId, currentUser.id);
+            } else {
+                await window.YZONE_RATING.likeReview(reviewId, currentUser.id);
+            }
+            
+            renderReviewsSection(parseInt(movieId));
+        }
+        
+        async function deleteReview(reviewId) {
+            if (confirm('Are you sure you want to delete your review?')) {
+                const result = await window.YZONE_RATING.deleteReview(reviewId, currentUser.id);
+                if (result.success) {
+                    showNotification('Review deleted!', 'success');
+                    renderReviewsSection(parseInt(movieId));
+                }
+            }
+        }
+        
+        function showErrorPage(message) {
+            const container = document.getElementById('detail-container');
+            container.innerHTML = `
+                <div class="error-state">
+                    <h2><i class="fas fa-exclamation-triangle"></i> Error</h2>
+                    <p>${message}</p>
+                    <a href="/frontend/index.html" class="btn btn-primary">Back to Home</a>
+                </div>
+            `;
+        }
+        
+        document.addEventListener('DOMContentLoaded', initDetailPage);
+    </script>
+</body>
+</html>

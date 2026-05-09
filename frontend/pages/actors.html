@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actors - YZONE</title>
+    <link rel="stylesheet" href="/frontend/css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .actors-header {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0000 100%);
+            padding: 60px 0 40px;
+            border-bottom: 1px solid #1a1a1a;
+        }
+        
+        .actors-header h1 {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+        
+        .actors-header h1 i {
+            color: #e50914;
+            margin-right: 12px;
+        }
+        
+        .actors-header p {
+            color: #888888;
+            font-size: 18px;
+        }
+        
+        .search-actor-section {
+            background: #0a0a0a;
+            padding: 30px 0;
+            border-bottom: 1px solid #1a1a1a;
+        }
+        
+        .search-actor-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            max-width: 500px;
+            margin: 0 auto;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 50px;
+            padding: 5px 20px;
+            transition: all 0.3s;
+        }
+        
+        .search-actor-wrapper:focus-within {
+            border-color: #e50914;
+            box-shadow: 0 0 0 2px rgba(229,9,20,0.2);
+        }
+        
+        .search-actor-wrapper i {
+            color: #666;
+            font-size: 18px;
+        }
+        
+        .search-actor-input {
+            flex: 1;
+            padding: 14px 0;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 16px;
+            outline: none;
+        }
+        
+        .search-actor-input::placeholder {
+            color: #666;
+        }
+        
+        .clear-search-btn {
+            background: none;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+        
+        .clear-search-btn:hover {
+            color: #e50914;
+            background: #2a2a2a;
+        }
+        
+        .actors-section {
+            padding: 40px 0;
+            min-height: 400px;
+        }
+        
+        .actors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 25px;
+        }
+        
+        .actor-card {
+            background: #0a0a0a;
+            border: 1px solid #1a1a1a;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+            text-align: center;
+            will-change: transform;
+        }
+        
+        .actor-card:hover {
+            transform: translateY(-5px);
+            border-color: #e50914;
+        }
+        
+        .actor-photo {
+            width: 100%;
+            aspect-ratio: 1/1;
+            object-fit: cover;
+        }
+        
+        .actor-info {
+            padding: 16px;
+        }
+        
+        .actor-name {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: #ffffff;
+        }
+        
+        .actor-movies-count {
+            font-size: 12px;
+            color: #e50914;
+        }
+        
+        /* Skeleton Loading dengan animasi smooth */
+        .skeleton-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 25px;
+        }
+        
+        .skeleton-card {
+            background: #0a0a0a;
+            border: 1px solid #1a1a1a;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .skeleton-photo {
+            width: 100%;
+            aspect-ratio: 1/1;
+            background: #151515;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .skeleton-photo::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent 0%, rgba(229,9,20,0.1) 50%, transparent 100%);
+            animation: shimmer 1.2s infinite;
+        }
+        
+        .skeleton-info {
+            padding: 16px;
+        }
+        
+        .skeleton-name {
+            height: 18px;
+            background: #151515;
+            border-radius: 4px;
+            width: 80%;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .skeleton-name::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent 0%, rgba(229,9,20,0.1) 50%, transparent 100%);
+            animation: shimmer 1.2s infinite;
+        }
+        
+        .skeleton-count {
+            height: 12px;
+            background: #151515;
+            border-radius: 4px;
+            width: 40%;
+            margin: 8px auto 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .skeleton-count::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent 0%, rgba(229,9,20,0.1) 50%, transparent 100%);
+            animation: shimmer 1.2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 80px 20px;
+        }
+        
+        .no-results i {
+            font-size: 60px;
+            color: #e50914;
+            margin-bottom: 20px;
+        }
+        
+        .no-results h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .no-results p {
+            color: #888;
+        }
+        
+        /* Modal */
+        .actor-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+        }
+        
+        .actor-modal-content {
+            max-width: 900px;
+            width: 90%;
+            background: #0a0a0a;
+            border: 1px solid #1a1a1a;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            margin: 40px auto;
+        }
+        
+        .actor-modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            color: white;
+            cursor: pointer;
+            background: none;
+            border: none;
+            z-index: 10;
+        }
+        
+        .actor-modal-close:hover {
+            color: #e50914;
+        }
+        
+        .actor-modal-header {
+            display: flex;
+            gap: 30px;
+            padding: 30px;
+            background: linear-gradient(135deg, #1a0000 0%, #0a0a0a 100%);
+            flex-wrap: wrap;
+        }
+        
+        .actor-modal-photo {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #e50914;
+        }
+        
+        .actor-modal-info {
+            flex: 1;
+        }
+        
+        .actor-modal-name {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+        
+        .actor-modal-bio {
+            color: #aaa;
+            line-height: 1.6;
+            margin-top: 15px;
+        }
+        
+        .actor-modal-bio p {
+            margin-bottom: 8px;
+        }
+        
+        .actor-modal-bio i {
+            color: #e50914;
+            width: 24px;
+        }
+        
+        .actor-movies-section {
+            padding: 30px;
+        }
+        
+        .actor-movies-section h3 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            border-left: 4px solid #e50914;
+            padding-left: 15px;
+        }
+        
+        .actor-movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+        }
+        
+        .actor-movie-card {
+            background: #1a1a1a;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .actor-movie-card:hover {
+            transform: translateY(-4px);
+        }
+        
+        .actor-movie-poster {
+            width: 100%;
+            aspect-ratio: 2/3;
+            object-fit: cover;
+        }
+        
+        .actor-movie-title {
+            padding: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+            color: #ccc;
+        }
+        
+        @media (max-width: 768px) {
+            .actors-header h1 { font-size: 32px; }
+            .actors-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 20px; }
+            .skeleton-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 20px; }
+            .actor-modal-header { flex-direction: column; align-items: center; text-align: center; }
+            .actor-modal-name { font-size: 24px; }
+            .actor-movies-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+            .search-actor-wrapper { max-width: 90%; }
+        }
+        
+        @media (max-width: 480px) {
+            .actors-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; }
+            .skeleton-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="navbar-placeholder"></div>
+
+    <div class="actors-header">
+        <div class="container">
+            <h1><i class="fas fa-users"></i> Actors & Cast</h1>
+            <p>Jelajahi aktor dan film-film yang mereka bintangi</p>
+        </div>
+    </div>
+
+    <div class="search-actor-section">
+        <div class="container">
+            <div class="search-actor-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="text" id="search-actor-input" class="search-actor-input" placeholder="Cari aktor berdasarkan nama...">
+                <button id="clear-search-actor" class="clear-search-btn" style="display: none;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="actors-section">
+        <div class="container">
+            <div id="actors-container"></div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="actor-modal" class="actor-modal">
+        <div class="actor-modal-content">
+            <button class="actor-modal-close" onclick="closeActorModal()">&times;</button>
+            <div id="actor-modal-body"></div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>YZONE</h3>
+                    <p>Your Zone for Cinema</p>
+                </div>
+                <div class="footer-links">
+                    <a href="/frontend/index.html">Home</a>
+                    <a href="/frontend/pages/movies.html">Movies</a>
+                    <a href="/frontend/pages/actors.html">Actors</a>
+                    <a href="/frontend/pages/profile.html">Watchlist</a>
+                    <a href="/frontend/pages/login.html">Login</a>
+                </div>
+                <div class="footer-copyright">
+                    <p>&copy; 2025 YZONE. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/frontend/js/utils.js"></script>
+    <script src="/frontend/js/data.js"></script>
+    <script src="/frontend/js/api.js"></script>
+    <script src="/frontend/js/auth.js"></script>
+    <script src="/frontend/js/navbar.js"></script>
+
+    <script>
+        let allActors = [];
+        let currentSearchQuery = '';
+        let isLoading = false;
+        
+        // Generate skeleton HTML
+        function getSkeletonHTML() {
+            return `
+                <div class="skeleton-grid">
+                    ${Array(12).fill().map(() => `
+                        <div class="skeleton-card">
+                            <div class="skeleton-photo"></div>
+                            <div class="skeleton-info">
+                                <div class="skeleton-name"></div>
+                                <div class="skeleton-count"></div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+        
+        async function loadActors() {
+            if (isLoading) return;
+            isLoading = true;
+            
+            const container = document.getElementById('actors-container');
+            
+            // Tampilkan skeleton dengan requestAnimationFrame agar lebih halus
+            requestAnimationFrame(() => {
+                container.innerHTML = getSkeletonHTML();
+            });
+            
+            try {
+                const movies = await YZONE_API.getAllMovies();
+                
+                const actorsMap = new Map();
+                
+                for (const movie of movies) {
+                    if (movie.cast && movie.cast.length > 0) {
+                        for (const actor of movie.cast) {
+                            if (!actorsMap.has(actor.name)) {
+                                actorsMap.set(actor.name, {
+                                    name: actor.name,
+                                    photo: actor.photo,
+                                    movies: []
+                                });
+                            }
+                            actorsMap.get(actor.name).movies.push({
+                                id: movie.id,
+                                title: movie.title,
+                                year: movie.year,
+                                poster: movie.poster,
+                                rating: movie.rating
+                            });
+                        }
+                    }
+                }
+                
+                allActors = Array.from(actorsMap.values());
+                
+                // Gunakan requestAnimationFrame untuk render yang halus
+                requestAnimationFrame(() => {
+                    renderActors();
+                    isLoading = false;
+                });
+                
+            } catch (error) {
+                console.error('Load actors error:', error);
+                requestAnimationFrame(() => {
+                    container.innerHTML = `<div class="no-results"><i class="fas fa-exclamation-triangle"></i><h3>Error</h3><p>Gagal memuat data aktor</p></div>`;
+                    isLoading = false;
+                });
+            }
+        }
+        
+        function renderActors() {
+            const container = document.getElementById('actors-container');
+            
+            let filteredActors = allActors;
+            if (currentSearchQuery) {
+                const query = currentSearchQuery.toLowerCase();
+                filteredActors = allActors.filter(actor => 
+                    actor.name.toLowerCase().includes(query)
+                );
+            }
+            
+            if (filteredActors.length === 0) {
+                container.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-user-slash"></i>
+                        <h3>Tidak ada aktor ditemukan</h3>
+                        <p>Coba dengan kata kunci lain</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '<div class="actors-grid">';
+            for (const actor of filteredActors) {
+                html += `
+                    <div class="actor-card" onclick="openActorModal('${escapeHtml(actor.name)}')">
+                        <img src="${actor.photo}" alt="${actor.name}" class="actor-photo" loading="lazy" onerror="this.src='/frontend/images/placeholder.jpg'">
+                        <div class="actor-info">
+                            <div class="actor-name">${escapeHtml(actor.name)}</div>
+                            <div class="actor-movies-count">${actor.movies.length} film</div>
+                        </div>
+                    </div>
+                `;
+            }
+            html += '</div>';
+            
+            // Gunakan innerHTML sekali saja, tidak bertahap
+            container.innerHTML = html;
+        }
+        
+        function openActorModal(actorName) {
+            const actor = allActors.find(a => a.name === actorName);
+            if (!actor) return;
+            
+            const modal = document.getElementById('actor-modal');
+            const modalBody = document.getElementById('actor-modal-body');
+            
+            const sortedMovies = [...actor.movies].sort((a, b) => b.year - a.year);
+            
+            let moviesHtml = '';
+            for (const movie of sortedMovies) {
+                moviesHtml += `
+                    <div class="actor-movie-card" onclick="goToMovie(${movie.id})">
+                        <img src="${movie.poster}" class="actor-movie-poster" loading="lazy" onerror="this.src='/frontend/images/placeholder.jpg'">
+                        <div class="actor-movie-title">${escapeHtml(movie.title)} (${movie.year})</div>
+                    </div>
+                `;
+            }
+            
+            modalBody.innerHTML = `
+                <div class="actor-modal-header">
+                    <img src="${actor.photo}" class="actor-modal-photo" loading="lazy" onerror="this.src='/frontend/images/placeholder.jpg'">
+                    <div class="actor-modal-info">
+                        <h2 class="actor-modal-name">${escapeHtml(actor.name)}</h2>
+                        <div class="actor-modal-bio">
+                            <p><i class="fas fa-film"></i> Membintangi ${actor.movies.length} film</p>
+                            <p><i class="fas fa-calendar"></i> Film terbaru: ${sortedMovies[0]?.year || '-'}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="actor-movies-section">
+                    <h3><i class="fas fa-film"></i> Filmography</h3>
+                    <div class="actor-movies-grid">
+                        ${moviesHtml}
+                    </div>
+                </div>
+            `;
+            
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeActorModal() {
+            const modal = document.getElementById('actor-modal');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        
+        function goToMovie(movieId) {
+            window.location.href = `/frontend/pages/detail.html?id=${movieId}`;
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+        
+        // Search functionality dengan debounce yang lebih smooth
+        const searchInput = document.getElementById('search-actor-input');
+        const clearSearchBtn = document.getElementById('clear-search-actor');
+        
+        function setupSearch() {
+            if (!searchInput) return;
+            
+            let searchTimeout;
+            
+            const performSearch = () => {
+                currentSearchQuery = searchInput.value;
+                
+                if (currentSearchQuery) {
+                    clearSearchBtn.style.display = 'inline-block';
+                } else {
+                    clearSearchBtn.style.display = 'none';
+                }
+                
+                // Render langsung tanpa delay untuk feedback cepat
+                renderActors();
+            };
+            
+            searchInput.addEventListener('input', () => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(performSearch, 300);
+            });
+            
+            if (clearSearchBtn) {
+                clearSearchBtn.addEventListener('click', () => {
+                    searchInput.value = '';
+                    currentSearchQuery = '';
+                    clearSearchBtn.style.display = 'none';
+                    renderActors();
+                });
+            }
+        }
+        
+        // Make global
+        window.openActorModal = openActorModal;
+        window.closeActorModal = closeActorModal;
+        window.goToMovie = goToMovie;
+        
+        // Initialize dengan requestAnimationFrame untuk startup yang halus
+        function init() {
+            requestAnimationFrame(() => {
+                loadActors();
+                setupSearch();
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

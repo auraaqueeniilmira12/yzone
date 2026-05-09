@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YZONE - Your Zone for Cinema</title>
+    <link rel="stylesheet" href="/frontend/css/main.css">
+    <link rel="stylesheet" href="/frontend/css/home.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Search History Dropdown Styles */
+        .search-wrapper {
+            position: relative;
+        }
+        
+        .search-history-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #0a0a0a;
+            border: 1px solid #1a1a1a;
+            border-radius: 12px;
+            margin-top: 8px;
+            z-index: 100;
+            max-height: 350px;
+            overflow-y: auto;
+            display: none;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+        }
+        
+        .search-history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid #1a1a1a;
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .clear-history-btn {
+            background: none;
+            border: none;
+            color: #dc3545;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .clear-history-btn:hover {
+            color: #ff4d4d;
+        }
+        
+        .search-history-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .search-history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 16px;
+            border-bottom: 1px solid #1a1a1a;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .search-history-item:hover {
+            background: #1a1a1a;
+        }
+        
+        .history-keyword {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            color: #e0e0e0;
+            font-size: 14px;
+        }
+        
+        .history-keyword i {
+            color: #e50914;
+            font-size: 12px;
+        }
+        
+        .history-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .history-time {
+            font-size: 11px;
+            color: #666;
+        }
+        
+        .remove-history-btn {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        
+        .remove-history-btn:hover {
+            color: #e50914;
+            background: #2a2a2a;
+        }
+        
+        .search-history-empty {
+            padding: 30px 20px;
+            text-align: center;
+            color: #666;
+        }
+        
+        .search-history-empty i {
+            font-size: 30px;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .search-history-empty p {
+            font-size: 13px;
+        }
+        
+        .history-toggle-btn {
+            background: none;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+        
+        .history-toggle-btn:hover {
+            background: #2a2a2a;
+            color: #e50914;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="navbar-placeholder"></div>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <h1 class="hero-title">Your Zone <span class="highlight">for Cinema</span></h1>
+                <p class="hero-subtitle">Temukan, simpan, dan kelola film favoritmu dalam satu tempat. YZONE adalah zona pribadimu untuk menjelajahi dunia perfilman.</p>
+                <div class="hero-buttons">
+                    <a href="/frontend/pages/movies.html" class="btn btn-primary">
+                        <span>Explore Movies</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                    <a href="/frontend/pages/profile.html" class="btn btn-secondary">
+                        <i class="fas fa-list"></i> My Watchlist
+                    </a>
+                </div>
+            </div>
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-number" id="total-movies">0</span>
+                    <span class="stat-label">Movies</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number" id="total-genres">0</span>
+                    <span class="stat-label">Genres</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number" id="watchlist-count">0</span>
+                    <span class="stat-label">Watchlist</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Search Section with History -->
+        <section class="search-section">
+            <div class="container">
+                <div class="search-wrapper">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-input" placeholder="Cari film berdasarkan judul, genre, atau sutradara..." class="search-input" autocomplete="off">
+                    <button id="search-btn" class="search-btn">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                    <button id="history-toggle-btn" class="history-toggle-btn" title="Riwayat Pencarian">
+                        <i class="fas fa-history"></i>
+                    </button>
+                    <div id="search-history-dropdown" class="search-history-dropdown"></div>
+                </div>
+                <div id="search-results" class="search-results" style="display: none;"></div>
+            </div>
+        </section>
+
+        <!-- Featured Section: Top Rated -->
+        <section class="featured-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2><i class="fas fa-star" style="color: #ffc107;"></i> Top Rated Movies</h2>
+                    <a href="/frontend/pages/movies.html" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div id="top-rated-movies">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Loading movies...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Section: Recommended -->
+        <section class="featured-section alt-bg">
+            <div class="container">
+                <div class="section-header">
+                    <h2><i class="fas fa-thumbs-up" style="color: #e50914;"></i> Recommended For You</h2>
+                    <span class="badge">Based on popular picks</span>
+                </div>
+                <div id="recommended-movies">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Loading recommendations...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <div class="container">
+                <div class="cta-content">
+                    <h2>Ready to build your watchlist?</h2>
+                    <p>Mulai kumpulkan film-film yang ingin kamu tonton. YZONE akan membantu kamu tidak pernah lupa film bagus lagi.</p>
+                    <a href="/frontend/pages/movies.html" class="btn btn-primary btn-large">
+                        <i class="fas fa-play"></i> Get Started
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>YZONE</h3>
+                    <p>Your Zone for Cinema</p>
+                </div>
+                <div class="footer-links">
+                    <a href="/frontend/index.html">Home</a>
+                    <a href="/frontend/pages/movies.html">Movies</a>
+                    <a href="/frontend/pages/actors.html">Actors</a>
+                    <a href="/frontend/pages/profile.html">Watchlist</a>
+                    <a href="/frontend/pages/login.html">Login</a>
+                </div>
+                <div class="footer-copyright">
+                    <p>&copy; 2025 YZONE. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/frontend/js/data.js"></script>
+    <script src="/frontend/js/utils.js"></script>
+    <script src="/frontend/js/api.js"></script>
+    <script src="/frontend/js/watchlist.js"></script>
+    <script src="/frontend/js/auth.js"></script>
+    <script src="/frontend/js/navbar.js"></script>
+    <script src="/frontend/js/app.js"></script>
+    
+    <script>
+        // Search History Integration
+        const searchInput = document.getElementById('search-input');
+        const searchBtn = document.getElementById('search-btn');
+        const searchResults = document.getElementById('search-results');
+        const historyDropdown = document.getElementById('search-history-dropdown');
+        const historyToggleBtn = document.getElementById('history-toggle-btn');
+        
+        // Toggle history dropdown
+        function toggleHistoryDropdown() {
+            if (historyDropdown.style.display === 'block') {
+                historyDropdown.style.display = 'none';
+            } else {
+                renderSearchHistoryDropdown();
+                historyDropdown.style.display = 'block';
+            }
+        }
+        
+        // Render search history dropdown
+        function renderSearchHistoryDropdown() {
+            const history = getSearchHistory();
+            
+            if (history.length === 0) {
+                historyDropdown.innerHTML = `
+                    <div class="search-history-empty">
+                        <i class="fas fa-history"></i>
+                        <p>Belum ada riwayat pencarian</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = `
+                <div class="search-history-header">
+                    <span><i class="fas fa-history"></i> Riwayat Pencarian</span>
+                    <button class="clear-history-btn" onclick="clearAllSearchHistory(); renderSearchHistoryDropdown();">
+                        <i class="fas fa-trash"></i> Hapus Semua
+                    </button>
+                </div>
+                <div class="search-history-list">
+            `;
+            
+            for (const item of history) {
+                const date = new Date(item.timestamp);
+                const timeAgo = getTimeAgo(date);
+                
+                html += `
+                    <div class="search-history-item" data-keyword="${escapeHtml(item.keyword)}">
+                        <div class="history-keyword" onclick="performSearchFromHistory('${escapeHtml(item.keyword)}')">
+                            <i class="fas fa-search"></i>
+                            <span>${escapeHtml(item.keyword)}</span>
+                        </div>
+                        <div class="history-meta">
+                            <span class="history-time">${timeAgo}</span>
+                            <button class="remove-history-btn" onclick="event.stopPropagation(); removeHistoryItem(${item.id})">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            html += `</div>`;
+            historyDropdown.innerHTML = html;
+        }
+        
+        // Perform search from history
+        function performSearchFromHistory(keyword) {
+            if (searchInput) {
+                searchInput.value = keyword;
+                // Trigger search
+                const event = new Event('input', { bubbles: true });
+                searchInput.dispatchEvent(event);
+                // Close dropdown
+                historyDropdown.style.display = 'none';
+                // Focus on search
+                setTimeout(() => searchInput.focus(), 100);
+            }
+        }
+        
+        // Remove single history item
+        function removeHistoryItem(id) {
+            removeFromSearchHistory(id);
+            renderSearchHistoryDropdown();
+            showNotification('Riwayat dihapus', 'success');
+        }
+        
+        // Clear all history
+        function clearAllSearchHistory() {
+            if (confirm('Hapus semua riwayat pencarian?')) {
+                clearSearchHistory();
+                renderSearchHistoryDropdown();
+                showNotification('Semua riwayat dihapus', 'success');
+            }
+        }
+        
+        // Override search function to add to history
+        const originalPerformSearch = window.performSearch || function() {};
+        
+        // Add search to history when searching
+        if (searchInput && searchBtn) {
+            const originalSearchHandler = () => {
+                const query = searchInput.value.trim();
+                if (query) {
+                    addToSearchHistory(query, 'home');
+                }
+            };
+            
+            searchBtn.addEventListener('click', originalSearchHandler);
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    const query = searchInput.value.trim();
+                    if (query) {
+                        addToSearchHistory(query, 'home');
+                    }
+                }
+            });
+        }
+        
+        // Event listeners
+        if (historyToggleBtn) {
+            historyToggleBtn.addEventListener('click', toggleHistoryDropdown);
+        }
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            const wrapper = document.querySelector('.search-wrapper');
+            if (wrapper && !wrapper.contains(e.target)) {
+                if (historyDropdown) {
+                    historyDropdown.style.display = 'none';
+                }
+            }
+        });
+        
+        // Make functions global
+        window.renderSearchHistoryDropdown = renderSearchHistoryDropdown;
+        window.performSearchFromHistory = performSearchFromHistory;
+        window.removeHistoryItem = removeHistoryItem;
+        window.clearAllSearchHistory = clearAllSearchHistory;
+    </script>
+</body>
+</html>

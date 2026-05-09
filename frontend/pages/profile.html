@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - YZONE</title>
+    <link rel="stylesheet" href="/frontend/css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Profile Page Styles */
+        .profile-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 30px;
+        }
+        
+        /* Profile Card */
+        .profile-card {
+            background: #0a0a0a;
+            border: 1px solid #1a1a1a;
+            border-radius: 20px;
+            padding: 30px;
+            position: sticky;
+            top: 100px;
+        }
+        
+        .profile-avatar {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .avatar-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .profile-avatar-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #e50914;
+        }
+        
+        .edit-avatar-btn {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background: #e50914;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .edit-avatar-btn:hover {
+            background: #b00710;
+            transform: scale(1.05);
+        }
+        
+        .profile-name {
+            font-size: 24px;
+            font-weight: 700;
+            text-align: center;
+            margin: 15px 0 5px;
+        }
+        
+        .profile-email {
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
+        .profile-bio {
+            text-align: center;
+            color: #ccc;
+            font-size: 14px;
+            padding: 15px;
+            background: #1a1a1a;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .profile-stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            border-top: 1px solid #1a1a1a;
+            border-bottom: 1px solid #1a1a1a;
+            margin-bottom: 20px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #e50914;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        /* QR Code */
+        .qr-code-section {
+            text-align: center;
+            padding: 20px;
+            background: #1a1a1a;
+            border-radius: 12px;
+        }
+        
+        .qr-code-section h4 {
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        
+        .qr-code {
+            background: white;
+            padding: 10px;
+            border-radius: 12px;
+            display: inline-block;
+        }
+        
+        .qr-code canvas {
+            width: 120px;
+            height: 120px;
+        }
+        
+        .share-profile {
+            margin-top: 15px;
+        }
+        
+        .share-btn {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 8px 16px;
+            color: #ccc;
+            cursor: pointer;
+            margin: 0 5px;
+            transition: all 0.3s;
+        }
+        
+        .share-btn:hover {
+            border-color: #e50914;
+            color: #e50914;
+        }
+        
+        /* Edit Form */
+        .edit-form {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #1a1a1a;
+        }
+        
+        .edit-form h4 {
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .edit-form input, .edit-form textarea {
+            width: 100%;
+            padding: 12px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: white;
+            margin-bottom: 12px;
+        }
+        
+        .edit-form input:focus, .edit-form textarea:focus {
+            outline: none;
+            border-color: #e50914;
+        }
+        
+        .edit-form textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .btn-save-profile {
+            width: 100%;
+            padding: 12px;
+            background: #e50914;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-save-profile:hover {
+            background: #b00710;
+        }
+        
+        .btn-cancel-edit {
+            width: 100%;
+            padding: 12px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: #ccc;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        /* Watchlist Section */
+        .watchlist-section {
+            background: #0a0a0a;
+            border: 1px solid #1a1a1a;
+            border-radius: 20px;
+            padding: 30px;
+        }
+        
+        .watchlist-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .watchlist-header h2 {
+            font-size: 24px;
+            border-left: none;
+            padding-left: 0;
+        }
+        
+        .watchlist-count {
+            background: #e50914;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        
+        .watchlist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+        
+        .watchlist-item {
+            background: #1a1a1a;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            gap: 15px;
+            padding: 15px;
+            transition: all 0.3s;
+        }
+        
+        .watchlist-item:hover {
+            transform: translateY(-3px);
+            border: 1px solid #e50914;
+        }
+        
+        .watchlist-item-poster {
+            width: 80px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        .watchlist-item-info {
+            flex: 1;
+        }
+        
+        .watchlist-item-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            cursor: pointer;
+        }
+        
+        .watchlist-item-title:hover {
+            color: #e50914;
+        }
+        
+        .watchlist-item-year {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 5px;
+        }
+        
+        .watchlist-item-rating {
+            font-size: 12px;
+            color: #ffc107;
+            margin-bottom: 8px;
+        }
+        
+        /* Notes Section di Watchlist Item */
+        .watchlist-notes-section {
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #333;
+        }
+        
+        .notes-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            background: #0a0a0a;
+            padding: 6px 10px;
+            border-radius: 8px;
+        }
+        
+        .notes-text {
+            font-size: 11px;
+            color: #aaa;
+            flex: 1;
+            word-break: break-word;
+        }
+        
+        .btn-edit-note {
+            background: none;
+            border: none;
+            color: #e50914;
+            cursor: pointer;
+            font-size: 11px;
+            padding: 4px;
+            border-radius: 4px;
+        }
+        
+        .btn-edit-note:hover {
+            background: #2a2a2a;
+        }
+        
+        .notes-edit {
+            background: #0a0a0a;
+            padding: 8px;
+            border-radius: 8px;
+        }
+        
+        .notes-textarea {
+            width: 100%;
+            padding: 6px 8px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 6px;
+            color: white;
+            font-size: 11px;
+            resize: vertical;
+            font-family: inherit;
+        }
+        
+        .notes-textarea:focus {
+            outline: none;
+            border-color: #e50914;
+        }
+        
+        .notes-edit-buttons {
+            display: flex;
+            gap: 6px;
+            margin-top: 6px;
+        }
+        
+        .btn-save-note, .btn-cancel-note {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .btn-save-note {
+            background: #e50914;
+            color: white;
+        }
+        
+        .btn-cancel-note {
+            background: #1a1a1a;
+            color: #ccc;
+        }
+        
+        .remove-watchlist-btn {
+            background: none;
+            border: none;
+            color: #dc3545;
+            cursor: pointer;
+            font-size: 11px;
+            margin-top: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .remove-watchlist-btn:hover {
+            color: #ff4d4d;
+        }
+        
+        .empty-watchlist {
+            text-align: center;
+            padding: 60px;
+            color: #888;
+        }
+        
+        /* Edit mode toggle */
+        .edit-mode-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .btn-edit-profile {
+            width: 100%;
+            padding: 10px;
+            background: #1a1a1a;
+            border: 1px solid #e50914;
+            border-radius: 8px;
+            color: #e50914;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-edit-profile:hover {
+            background: #e50914;
+            color: white;
+        }
+        
+        .profile-view-mode, .profile-edit-mode {
+            display: block;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        /* Responsive */
+        @media (max-width: 900px) {
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .profile-card {
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="navbar-placeholder"></div>
+
+    <div class="profile-container">
+        <div class="profile-grid">
+            <!-- Left Column: Profile Card -->
+            <div class="profile-card">
+                <div id="profile-view-mode">
+                    <div class="profile-avatar">
+                        <div class="avatar-wrapper">
+                            <img id="profile-avatar-img" src="" alt="Avatar" class="profile-avatar-img">
+                        </div>
+                    </div>
+                    <h2 id="profile-display-name" class="profile-name">Loading...</h2>
+                    <p id="profile-display-email" class="profile-email">loading@email.com</p>
+                    <p id="profile-display-bio" class="profile-bio">Memuat profil...</p>
+                    
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <div class="stat-value" id="profile-watchlist-count">0</div>
+                            <div class="stat-label">Watchlist</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="profile-member-since">-</div>
+                            <div class="stat-label">Member Since</div>
+                        </div>
+                    </div>
+                    
+                    <div class="qr-code-section">
+                        <h4><i class="fas fa-qrcode"></i> My QR Code</h4>
+                        <div id="qr-code-container" class="qr-code"></div>
+                        <div class="share-profile">
+                            <button class="share-btn" onclick="downloadQR()"><i class="fas fa-download"></i> Download QR</button>
+                            <button class="share-btn" onclick="shareProfile()"><i class="fas fa-share-alt"></i> Share Profile</button>
+                        </div>
+                    </div>
+                    
+                    <button class="btn-edit-profile" onclick="toggleEditMode(true)">
+                        <i class="fas fa-edit"></i> Edit Profile
+                    </button>
+                </div>
+                
+                <div id="profile-edit-mode" class="hidden">
+                    <div class="profile-avatar">
+                        <div class="avatar-wrapper">
+                            <img id="edit-avatar-img" src="" alt="Avatar" class="profile-avatar-img">
+                            <button class="edit-avatar-btn" onclick="openAvatarUrlModal()">
+                                <i class="fas fa-camera"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="edit-form">
+                        <h4><i class="fas fa-user-edit"></i> Edit Profile</h4>
+                        <input type="text" id="edit-name" placeholder="Nama Lengkap">
+                        <textarea id="edit-bio" placeholder="Bio / Deskripsi diri..."></textarea>
+                        <input type="url" id="edit-avatar-url" placeholder="URL Foto Profil (opsional)">
+                        <button class="btn-save-profile" onclick="saveProfile()">
+                            <i class="fas fa-save"></i> Simpan Perubahan
+                        </button>
+                        <button class="btn-cancel-edit" onclick="toggleEditMode(false)">
+                            <i class="fas fa-times"></i> Batal
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Column: Watchlist -->
+            <div class="watchlist-section">
+                <div class="watchlist-header">
+                    <h2><i class="fas fa-list"></i> My Watchlist</h2>
+                    <span class="watchlist-count" id="watchlist-header-count">0</span>
+                </div>
+                <div id="watchlist-container">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Loading watchlist...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>YZONE</h3>
+                    <p>Your Zone for Cinema</p>
+                </div>
+                <div class="footer-links">
+                    <a href="/frontend/index.html">Home</a>
+                    <a href="/frontend/pages/movies.html">Movies</a>
+                    <a href="/frontend/pages/profile.html">Profile</a>
+                    <a href="/frontend/pages/login.html">Login</a>
+                </div>
+                <div class="footer-copyright">
+                    <p>&copy; 2025 YZONE. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script src="/frontend/js/utils.js"></script>
+    <script src="/frontend/js/data.js"></script>
+    <script src="/frontend/js/api.js"></script>
+    <script src="/frontend/js/watchlist.js"></script>
+    <script src="/frontend/js/auth.js"></script>
+    <script src="/frontend/js/navbar.js"></script>
+
+    <script>
+        let currentUser = null;
+        let qr = null;
+        
+        async function loadProfile() {
+            currentUser = window.YZONE_AUTH.getCurrentUser();
+            
+            if (!currentUser) {
+                window.location.href = '/frontend/pages/login.html';
+                return;
+            }
+            
+            const users = JSON.parse(localStorage.getItem('yzone_users')) || [];
+            const userData = users.find(u => u.id === currentUser.id);
+            
+            if (userData) {
+                document.getElementById('profile-avatar-img').src = userData.avatar || `https://ui-avatars.com/api/?background=e50914&color=fff&name=${encodeURIComponent(userData.name)}`;
+                document.getElementById('edit-avatar-img').src = userData.avatar || `https://ui-avatars.com/api/?background=e50914&color=fff&name=${encodeURIComponent(userData.name)}`;
+                document.getElementById('profile-display-name').textContent = userData.name;
+                document.getElementById('profile-display-email').textContent = userData.email;
+                document.getElementById('profile-display-bio').textContent = userData.bio || 'Tidak ada bio. Klik Edit Profile untuk menambahkan.';
+                
+                document.getElementById('edit-name').value = userData.name;
+                document.getElementById('edit-bio').value = userData.bio || '';
+                document.getElementById('edit-avatar-url').value = userData.avatar || '';
+                
+                const memberSince = userData.createdAt ? new Date(userData.createdAt).toLocaleDateString('id-ID') : '2025';
+                document.getElementById('profile-member-since').textContent = memberSince;
+            }
+            
+            generateQRCode();
+            await loadWatchlist();
+        }
+        
+        function generateQRCode() {
+            const qrContainer = document.getElementById('qr-code-container');
+            qrContainer.innerHTML = '';
+            
+            const profileData = JSON.stringify({
+                id: currentUser.id,
+                name: currentUser.name,
+                email: currentUser.email,
+                profileUrl: window.location.href
+            });
+            
+            qr = new QRCode(qrContainer, {
+                text: profileData,
+                width: 120,
+                height: 120,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        }
+        
+        function downloadQR() {
+            const canvas = document.querySelector('#qr-code-container canvas');
+            if (canvas) {
+                const link = document.createElement('a');
+                link.download = `yzone_${currentUser.name}_qr.png`;
+                link.href = canvas.toDataURL();
+                link.click();
+                showNotification('QR Code berhasil diunduh!', 'success');
+            }
+        }
+        
+        function shareProfile() {
+            const text = `Check out ${currentUser.name}'s profile on YZONE!`;
+            if (navigator.share) {
+                navigator.share({
+                    title: 'YZONE Profile',
+                    text: text,
+                    url: window.location.href
+                });
+            } else {
+                navigator.clipboard.writeText(text);
+                showNotification('Profile link copied to clipboard!', 'success');
+            }
+        }
+        
+        function toggleEditMode(isEdit) {
+            const viewMode = document.getElementById('profile-view-mode');
+            const editMode = document.getElementById('profile-edit-mode');
+            
+            if (isEdit) {
+                viewMode.classList.add('hidden');
+                editMode.classList.remove('hidden');
+            } else {
+                viewMode.classList.remove('hidden');
+                editMode.classList.add('hidden');
+            }
+        }
+        
+        function openAvatarUrlModal() {
+            const url = prompt('Masukkan URL foto profil (gambar langsung):', document.getElementById('edit-avatar-url').value);
+            if (url) {
+                document.getElementById('edit-avatar-url').value = url;
+                document.getElementById('edit-avatar-img').src = url;
+            }
+        }
+        
+        async function saveProfile() {
+            const newName = document.getElementById('edit-name').value;
+            const newBio = document.getElementById('edit-bio').value;
+            let newAvatar = document.getElementById('edit-avatar-url').value;
+            
+            if (!newName.trim()) {
+                showNotification('Nama tidak boleh kosong!', 'error');
+                return;
+            }
+            
+            if (!newAvatar) {
+                newAvatar = `https://ui-avatars.com/api/?background=e50914&color=fff&name=${encodeURIComponent(newName)}`;
+            }
+            
+            const users = JSON.parse(localStorage.getItem('yzone_users')) || [];
+            const userIndex = users.findIndex(u => u.id === currentUser.id);
+            
+            if (userIndex !== -1) {
+                users[userIndex].name = newName;
+                users[userIndex].bio = newBio;
+                users[userIndex].avatar = newAvatar;
+                localStorage.setItem('yzone_users', JSON.stringify(users));
+                
+                const updatedUser = {
+                    id: users[userIndex].id,
+                    name: newName,
+                    email: users[userIndex].email,
+                    role: users[userIndex].role,
+                    avatar: newAvatar
+                };
+                localStorage.setItem('yzone_current_user', JSON.stringify(updatedUser));
+                currentUser = updatedUser;
+                
+                document.getElementById('profile-avatar-img').src = newAvatar;
+                document.getElementById('profile-display-name').textContent = newName;
+                document.getElementById('profile-display-bio').textContent = newBio || 'Tidak ada bio. Klik Edit Profile untuk menambahkan.';
+                
+                generateQRCode();
+                window.YZONE_AUTH.updateNavbarForAuth();
+                
+                showNotification('Profil berhasil disimpan!', 'success');
+                toggleEditMode(false);
+            }
+        }
+        
+        async function loadWatchlist() {
+            const container = document.getElementById('watchlist-container');
+            try {
+                const watchlist = await YZONE_WATCHLIST.getWatchlist();
+                const count = watchlist.length;
+                
+                document.getElementById('profile-watchlist-count').textContent = count;
+                document.getElementById('watchlist-header-count').textContent = count;
+                
+                if (!watchlist || watchlist.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-watchlist">
+                            <i class="fas fa-film" style="font-size: 48px; color: #e50914; margin-bottom: 20px;"></i>
+                            <p>Belum ada film di watchlist kamu.</p>
+                            <a href="/frontend/pages/movies.html" class="btn btn-primary" style="margin-top: 15px;">Explore Movies</a>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                let html = '<div class="watchlist-grid">';
+                for (const item of watchlist) {
+                    const movie = item.movie;
+                    html += `
+                        <div class="watchlist-item" data-movie-id="${movie.id}" data-watchlist-id="${item.watchlistId}">
+                            <img src="${movie.poster}" class="watchlist-item-poster" onerror="this.src='/frontend/assets/images/placeholder.jpg'">
+                            <div class="watchlist-item-info">
+                                <div class="watchlist-item-title">${movie.title}</div>
+                                <div class="watchlist-item-year">${movie.year} | ${movie.genre.split(',')[0]}</div>
+                                <div class="watchlist-item-rating"><i class="fas fa-star"></i> ${movie.rating}/10</div>
+                                
+                                <div class="watchlist-notes-section">
+                                    <div id="notes-display-${item.watchlistId}" class="notes-display">
+                                        <span class="notes-text">${item.notes || 'Tidak ada catatan'}</span>
+                                        <button class="btn-edit-note" onclick="event.stopPropagation(); showEditNote(${item.watchlistId}, '${escapeHtml(item.notes || '')}')">
+                                            <i class="fas fa-pencil-alt"></i> Edit
+                                        </button>
+                                    </div>
+                                    <div id="notes-edit-${item.watchlistId}" class="notes-edit" style="display: none;">
+                                        <textarea id="notes-textarea-${item.watchlistId}" class="notes-textarea" rows="2" placeholder="Tulis catatan untuk film ini...">${escapeHtml(item.notes || '')}</textarea>
+                                        <div class="notes-edit-buttons">
+                                            <button class="btn-save-note" onclick="event.stopPropagation(); saveNote(${item.watchlistId})">
+                                                <i class="fas fa-save"></i> Simpan
+                                            </button>
+                                            <button class="btn-cancel-note" onclick="event.stopPropagation(); cancelEditNote(${item.watchlistId}, '${escapeHtml(item.notes || '')}')">
+                                                <i class="fas fa-times"></i> Batal
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <button class="remove-watchlist-btn" onclick="event.stopPropagation(); removeFromWatchlist(${item.watchlistId})">
+                                    <i class="fas fa-trash"></i> Hapus dari Watchlist
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+                html += '</div>';
+                container.innerHTML = html;
+                
+                document.querySelectorAll('.watchlist-item-poster, .watchlist-item-title').forEach(el => {
+                    el.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const item = el.closest('.watchlist-item');
+                        const movieId = item.getAttribute('data-movie-id');
+                        window.location.href = `/frontend/pages/detail.html?id=${movieId}`;
+                    });
+                });
+                
+            } catch (error) {
+                console.error('Load watchlist error:', error);
+                container.innerHTML = `<div class="empty-watchlist"><p>Gagal memuat watchlist</p></div>`;
+            }
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+                return c;
+            });
+        }
+        
+        function showEditNote(watchlistId, currentNotes) {
+            document.getElementById(`notes-display-${watchlistId}`).style.display = 'none';
+            document.getElementById(`notes-edit-${watchlistId}`).style.display = 'block';
+            const textarea = document.getElementById(`notes-textarea-${watchlistId}`);
+            textarea.value = currentNotes;
+            textarea.focus();
+        }
+        
+        function cancelEditNote(watchlistId, originalNotes) {
+            document.getElementById(`notes-edit-${watchlistId}`).style.display = 'none';
+            document.getElementById(`notes-display-${watchlistId}`).style.display = 'flex';
+            const notesSpan = document.querySelector(`#notes-display-${watchlistId} .notes-text`);
+            if (notesSpan) {
+                notesSpan.textContent = originalNotes || 'Tidak ada catatan';
+            }
+        }
+        
+        async function saveNote(watchlistId) {
+            const textarea = document.getElementById(`notes-textarea-${watchlistId}`);
+            const newNotes = textarea.value;
+            
+            const result = await YZONE_WATCHLIST.updateWatchlistNote(watchlistId, newNotes);
+            
+            if (result.success) {
+                document.getElementById(`notes-edit-${watchlistId}`).style.display = 'none';
+                document.getElementById(`notes-display-${watchlistId}`).style.display = 'flex';
+                const notesSpan = document.querySelector(`#notes-display-${watchlistId} .notes-text`);
+                if (notesSpan) {
+                    notesSpan.textContent = newNotes || 'Tidak ada catatan';
+                }
+                showNotification('Catatan berhasil disimpan!', 'success');
+                await loadWatchlist();
+            } else {
+                showNotification(result.message || 'Gagal menyimpan catatan', 'error');
+            }
+        }
+        
+        async function removeFromWatchlist(watchlistId) {
+            if (confirm('Yakin ingin menghapus film ini dari watchlist?')) {
+                const result = await YZONE_WATCHLIST.removeMovieFromWatchlist(watchlistId);
+                if (result.success) {
+                    await loadWatchlist();
+                    await loadProfile();
+                    showNotification('Film dihapus dari watchlist', 'success');
+                }
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', loadProfile);
+    </script>
+</body>
+</html>
